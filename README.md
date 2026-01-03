@@ -1,7 +1,7 @@
 ## URL Uᴘʟᴏᴀᴅᴇʀ ʙᴏᴛ V4 🚀
 
 
-[![logo](https://graph.org/file/a7af2d3ece56bbb1297aa.jpg)](https://telegram.dog/UploadLinkToFileBot)
+[![logo](https://graph.org/file/3a2673598ff2bf4d8fe62-469872b46100c9edb8.jpg)](https://telegram.me/zkp143)
 
 ![Repo Size](https://img.shields.io/github/repo-size/LISA-KOREA/UPLOADER-BOT-V4?&style=flat-square&logo=github)
 
@@ -18,7 +18,7 @@
 # ⚠️ SECURITY WARNING
 
 This is a **public project** — if you fork it and push your bot’s credentials,  
-**everyone can see your secrets** (including your `BOT_TOKEN`, `API_HASH`, or `cookies.txt`).
+**everyone can see your secrets** (including your `BOT_TOKEN`, `API_HASH`).
 
 > Use **Heroku Config Vars**, `.env`, or private forks to keep your credentials safe.  
 
@@ -34,7 +34,7 @@ Maintaining and improving this project takes time and resources. If you find thi
 - **UPI / GPay / Paytm / PhonePe**
 - **PayPal** (International)
 - **Credit/Debit Cards** (via PayPal)
-- **Cryptocurrency**: Bitcoin, Tron (TRC20)
+- **Cryptocurrency**: Bitcoin, USDT (BEP20)
 - **Payeer**
 
 ### Payment Details
@@ -62,11 +62,11 @@ If you have any questions or would like to sponsor this project in another way, 
 <b><details><summary>Tap On Me For Deploy</summary>
 
 #
+## 🚀 Deploy to Heroku
 
-  ㅤ ㅤ   ㅤ <a href="https://github.com/LISA-KOREA/UPLOADER-BOT-V4/fork"><img alt="Fork and deploy" src="https://img.shields.io/badge/-Fork%20And%20Deploy-black?style=for-the-badge&logo=github&logoColor=white"/></a> 
-
-#
-  ㅤ<a href="https://dashboard.heroku.com/new?template=https%3A%2F%2Fgithub.com%2FLISA-KOREA%2FUPLOADER-BOT-V4"><img alt="heroku" src="https://img.shields.io/badge/-Deploy%20To%20Heroku-purple?style=for-the-badge&logo=heroku&logoColor=white"/></a> 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](
+https://heroku.com/deploy?template=https://github.com/ivanstanley143/verutheorubot
+) 
 
 </b>
 </details>
@@ -88,7 +88,13 @@ If you have any questions or would like to sponsor this project in another way, 
 </b>
 </details>
 
-### DigitalOcean
+## 🚀 Deploy to Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](
+https://heroku.com/deploy?template=https://github.com/ivanstanley143/verutheorubot
+)
+
+## DigitalOcean
 <b><details><summary>Tap On Me For Deploy</summary>
 
 - Run Command : `gunicorn app:app & python3 bot.py`
