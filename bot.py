@@ -1,5 +1,4 @@
-# ©️ LISA-KOREA | @LISA_FAN_LK | NT_BOT_CHANNEL | @NT_BOTS_SUPPORT | LISA-KOREA/UPLOADER-BOT-V4
-# [⚠️ Do not change this repo link ⚠️] :- https://github.com/LISA-KOREA/UPLOADER-BOT-V4
+# [⚠️ Do not change this repo link ⚠️] :- https://github.com/ivanstanley143/verutheorubot1
 
 import os
 from plugins.config import Config
@@ -15,7 +14,7 @@ if __name__ == "__main__":
     print("🧠  Do NOT expose your BOT_TOKEN, API_ID, API_HASH, or cookies.txt.")
     print("💡  Always use Heroku Config Vars or a private .env file to store secrets.")
     print("🔒  Never commit sensitive data to your fork — anyone can steal it!")
-    print("📢  Support: @NT_BOTS_SUPPORT")
+    print("📢  Support: @ZKP143")
     print("=" * 60 + "\n")
 
     # Ensure download folder exists
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     # Start bot
     plugins = dict(root="plugins")
     Client = Client(
-        "@UploaderXNTBot",
+        "@MalluMoviesLeechbot",
         bot_token=Config.BOT_TOKEN,
         api_id=Config.API_ID,
         api_hash=Config.API_HASH,
@@ -34,5 +33,5 @@ if __name__ == "__main__":
         plugins=plugins
     )
 
-    print("🎊 I AM ALIVE 🎊  • Support @NT_BOTS_SUPPORT")
+    print("🎊 I AM ALIVE 🎊  • Support @ZKP143")
     Client.run()
