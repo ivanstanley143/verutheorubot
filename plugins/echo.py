@@ -35,18 +35,6 @@ from pyrogram.types import Thumbnail
 @Client.on_message(filters.private & filters.regex(pattern=".*http.*"))
 async def echo(bot, update):
     if update.from_user.id != Config.OWNER_ID:  
-        if not await check_verification(bot, update.from_user.id) and Config.TRUE_OR_FALSE:
-            button = [[
-                InlineKeyboardButton("✓⃝ Vᴇʀɪꜰʏ ✓⃝", url=await get_token(bot, update.from_user.id, f"https://telegram.me/{Config.BOT_USERNAME}?start="))
-                ],[
-                InlineKeyboardButton("🔆 Wᴀᴛᴄʜ Hᴏᴡ Tᴏ Vᴇʀɪꜰʏ 🔆", url=f"{Config.VERIFICATION}")
-            ]]
-            await update.reply_text(
-                text="<b>Pʟᴇᴀsᴇ Vᴇʀɪꜰʏ Fɪʀsᴛ Tᴏ Usᴇ Mᴇ</b>",
-                protect_content=True,
-                reply_markup=InlineKeyboardMarkup(button)
-            )
-            return
     if Config.LOG_CHANNEL:
         try:
             log_message = await update.forward(Config.LOG_CHANNEL)
@@ -174,109 +162,7 @@ async def echo(bot, update):
             disable_web_page_preview=True
         )
         return False
-    if t_response:
-        x_reponse = t_response
-        if "\n" in x_reponse:
-            x_reponse = x_reponse.splitlines()[0]
-        response_json = json.loads(x_reponse)
-        randem = random_char(5)
-        save_ytdl_json_path = Config.DOWNLOAD_LOCATION + \
-            "/" + str(update.from_user.id) + f'{randem}' + ".json"
-        with open(save_ytdl_json_path, "w", encoding="utf8") as outfile:
-            json.dump(response_json, outfile, ensure_ascii=False)
-        # logger.info(response_json)
-        inline_keyboard = []
-        duration = None
-        if "duration" in response_json:
-            duration = response_json["duration"]
-        if "formats" in response_json:
-            for formats in response_json["formats"]:
-                format_id = formats.get("format_id")
-                format_string = formats.get("format_note")
-                if format_string is None:
-                    format_string = formats.get("format")
-                if "DASH" in format_string.upper():
-                    continue
-          
-                format_ext = formats.get("ext")
-                if formats.get('filesize'):
-                    size = formats['filesize']
-                elif formats.get('filesize_approx'):
-                    size = formats['filesize_approx']
-                else:
-                    size = 0
-                cb_string_video = "{}|{}|{}|{}".format(
-                    "video", format_id, format_ext, randem)
-                cb_string_file = "{}|{}|{}|{}".format(
-                    "file", format_id, format_ext, randem)
-                if format_string is not None and not "audio only" in format_string:
-                    ikeyboard = [
-                        InlineKeyboardButton(
-                            "📁 " + format_string + " " + format_ext + " " + humanbytes(size) + " ",
-                            callback_data=(cb_string_video).encode("UTF-8")
-                        )
-                    ]
-                    """if duration is not None:
-                        cb_string_video_message = "{}|{}|{}|{}|{}".format(
-                            "vm", format_id, format_ext, ran, randem)
-                        ikeyboard.append(
-                            InlineKeyboardButton(
-                                "VM",
-                                callback_data=(
-                                    cb_string_video_message).encode("UTF-8")
-                            )
-                        )"""
-                else:
-                    # special weird case :\
-                    ikeyboard = [
-                        InlineKeyboardButton(
-                            "📁 [" +
-                            "] ( " +
-                            humanbytes(size) + " )",
-                            callback_data=(cb_string_video).encode("UTF-8")
-                        )
-                    ]
-                inline_keyboard.append(ikeyboard)
-            if duration is not None:
-                cb_string_64 = "{}|{}|{}|{}".format("audio", "64k", "mp3", randem)
-                cb_string_128 = "{}|{}|{}|{}".format("audio", "128k", "mp3", randem)
-                cb_string_320 = "{}|{}|{}|{}".format("audio", "320k", "mp3", randem)
-                inline_keyboard.append([
-                    InlineKeyboardButton(
-                        "🎵 ᴍᴘ𝟹 " + "(" + "64 ᴋʙᴘs" + ")", callback_data=cb_string_64.encode("UTF-8")),
-                    InlineKeyboardButton(
-                        "🎵 ᴍᴘ𝟹 " + "(" + "128 ᴋʙᴘs" + ")", callback_data=cb_string_128.encode("UTF-8"))
-                ])
-                inline_keyboard.append([
-                    InlineKeyboardButton(
-                        "🎵 ᴍᴘ𝟹 " + "(" + "320 ᴋʙᴘs" + ")", callback_data=cb_string_320.encode("UTF-8"))
-                ])
-                inline_keyboard.append([                 
-                    InlineKeyboardButton(
-                        "🔒 ᴄʟᴏsᴇ", callback_data='close')               
-                ])
-        else:
-            format_id = response_json["format_id"]
-            format_ext = response_json["ext"]
-            cb_string_file = "{}|{}|{}|{}".format(
-                "file", format_id, format_ext, randem)
-            cb_string_video = "{}|{}|{}|{}".format(
-                "video", format_id, format_ext, randem)
-            inline_keyboard.append([
-                InlineKeyboardButton(
-                    "📁 Document",
-                    callback_data=(cb_string_video).encode("UTF-8")
-                )
-            ])
-        reply_markup = InlineKeyboardMarkup(inline_keyboard)
-        await chk.delete()
-        await bot.send_message(
-            chat_id=update.chat.id,
-            text=Translation.FORMAT_SELECTION.format(Thumbnail) + "\n" + Translation.SET_CUSTOM_USERNAME_PASSWORD,
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            reply_to_message_id=update.id
-        )
+    
     else:
         #fallback for nonnumeric port a.k.a seedbox.io
         inline_keyboard = []
