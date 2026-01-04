@@ -1,4 +1,4 @@
-# @Shrimadhav Uk | @LISA_FAN_LK
+
 
 import logging
 logging.basicConfig(level=logging.DEBUG,
@@ -72,6 +72,7 @@ async def ddl_call_back(bot, update):
     if not os.path.isdir(tmp_directory_for_each_user):
         os.makedirs(tmp_directory_for_each_user)
     download_directory = tmp_directory_for_each_user + "/" + custom_file_name
+    final_name = os.path.basename(download_directory)
     command_to_exec = []
     async with aiohttp.ClientSession() as session:
         c_time = time.time()
@@ -118,6 +119,7 @@ async def ddl_call_back(bot, update):
                 thumbnail = await Gthumb01(bot, update)
                 await update.message.reply_document(
                     document=download_directory,
+                    file_name=final_name,
                     thumb=thumbnail,
                     caption=description,
                     parse_mode=enums.ParseMode.HTML,
@@ -133,6 +135,7 @@ async def ddl_call_back(bot, update):
                  thumb_image_path = await Gthumb02(bot, update, duration, download_directory)
                  await update.message.reply_video(
                     video=download_directory,
+                    file_name=final_name,
                     caption=description,
                     duration=duration,
                     width=width,
@@ -152,6 +155,7 @@ async def ddl_call_back(bot, update):
                 thumbnail = await Gthumb01(bot, update)
                 await update.message.reply_audio(
                     audio=download_directory,
+                    file_name=final_name,
                     caption=description,
                     parse_mode=enums.ParseMode.HTML,
                     duration=duration,
