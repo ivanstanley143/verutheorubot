@@ -118,10 +118,10 @@ async def ddl_call_back(bot, update):
             )
             return False
     if os.path.exists(download_directory):
-    quality, duration = get_video_info(download_directory)
+        quality, duration = get_video_info(download_directory)
 
     # Detect language from filename
-    file_lower = custom_file_name.lower()
+        file_lower = custom_file_name.lower()
 
     if "malayalam" in file_lower or "mal" in file_lower:
         language = "Malayalam"
