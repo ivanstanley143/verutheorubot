@@ -161,47 +161,50 @@ async def ddl_call_back(bot, update):
             # https://stackoverflow.com/a/678242/4723940
         file_size = os.stat(download_directory).st_size
     if file_size > Config.TG_MAX_FILE_SIZE:
-        await update.message.edit_caption(
+    await update.message.edit_caption(
         caption=Translation.RCHD_TG_API_LIMIT,
         parse_mode=enums.ParseMode.HTML
     )
+
 else:
     start_time = time.time()
-            if (await db.get_upload_as_doc(update.from_user.id)) is False:
-                thumbnail = await Gthumb01(bot, update)
-                await update.message.reply_document(
-                    document=download_directory,
-                    file_name=final_name,
-                    thumb=thumbnail,
-                    caption=description,
-                    parse_mode=enums.ParseMode.HTML,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time
-                    )
-                )
-            else:
-                 width, height, duration = await Mdata01(download_directory)
-                 thumb_image_path = await Gthumb02(bot, update, duration, download_directory)
-                 await update.message.reply_video(
-                    video=download_directory,
-                    file_name=final_name,
-                    caption=description,
-                    duration=duration,
-                    width=width,
-                    height=height,
-                    supports_streaming=True,
-                    parse_mode=enums.ParseMode.HTML,
-                    thumb=thumb_image_path,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time
-                    )
-                )
+
+    if (await db.get_upload_as_doc(update.from_user.id)) is False:
+        thumbnail = await Gthumb01(bot, update)
+        await update.message.reply_document(
+            document=download_directory,
+            file_name=final_name,
+            thumb=thumbnail,
+            caption=description,
+            parse_mode=enums.ParseMode.HTML,
+            progress=progress_for_pyrogram,
+            progress_args=(
+                Translation.UPLOAD_START,
+                update.message,
+                start_time
+            )
+        )
+
+    else:
+        width, height, duration = await Mdata01(download_directory)
+        thumb_image_path = await Gthumb02(bot, update, duration, download_directory)
+        await update.message.reply_video(
+            video=download_directory,
+            file_name=final_name,
+            caption=description,
+            duration=duration,
+            width=width,
+            height=height,
+            supports_streaming=True,
+            parse_mode=enums.ParseMode.HTML,
+            thumb=thumb_image_path,
+            progress=progress_for_pyrogram,
+            progress_args=(
+                Translation.UPLOAD_START,
+                update.message,
+                start_time
+            )
+        )
             if tg_send_type == "audio":
                 duration = await Mdata03(download_directory)
                 thumbnail = await Gthumb01(bot, update)
