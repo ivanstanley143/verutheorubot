@@ -148,20 +148,20 @@ async def ddl_call_back(bot, update):
     f"⏱ <b>{duration}</b>\n"
     f"🔊 <b>{language}</b>"
 )
-        end_one = datetime.now()
-        await update.message.edit_caption(
-            caption=Translation.UPLOAD_START,
-            parse_mode=enums.ParseMode.HTML
-        )
-        file_size = Config.TG_MAX_FILE_SIZE + 1
-        try:
-            file_size = os.stat(download_directory).st_size
-        except FileNotFoundError as exc:
-            download_directory = os.path.splitext(download_directory)[0] + "." + "mkv"
+    end_one = datetime.now()
+    await update.message.edit_caption(
+        caption=Translation.UPLOAD_START,
+        parse_mode=enums.ParseMode.HTML
+)
+    file_size = Config.TG_MAX_FILE_SIZE + 1
+    try:
+        file_size = os.stat(download_directory).st_size
+    except FileNotFoundError as exc:
+        download_directory = os.path.splitext(download_directory)[0] + "." + "mkv"
             # https://stackoverflow.com/a/678242/4723940
-            file_size = os.stat(download_directory).st_size
-        if file_size > Config.TG_MAX_FILE_SIZE:
-            await update.message.edit_caption(
+        file_size = os.stat(download_directory).st_size
+    if file_size > Config.TG_MAX_FILE_SIZE:
+    await update.message.edit_caption(
                 
                 caption=Translation.RCHD_TG_API_LIMIT,
                 parse_mode=enums.ParseMode.HTML
