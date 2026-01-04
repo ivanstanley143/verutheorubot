@@ -135,7 +135,6 @@ if "english" in file_lower or "eng" in file_lower:
     languages.append("English")
 
 language = " + ".join(languages)   # ← NO Unknown
-
     title = os.path.splitext(custom_file_name)[0]
     title = unquote(title)
     title = title.replace("+", " ").replace("_", " ").replace(".", " ")
