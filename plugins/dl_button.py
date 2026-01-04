@@ -1,4 +1,13 @@
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote
+
+def clean_name(name: str) -> str:
+    """
+    Cleans filename for quality and language detection
+    """
+    name = unquote(name)          # %2B → +
+    name = name.replace("+", " ") # + → space
+    name = name.lower()           # make lowercase
+    return name
 
 import logging
 logging.basicConfig(
@@ -34,7 +43,7 @@ def get_video_info(file_path, file_name=""):
     quality = "Unknown"
     duration = "Unknown"
 
-    # 1️⃣ Try metadata (optional)
+    # 1️⃣ Try reading video metadata
     try:
         parser = createParser(file_path)
         if parser:
@@ -52,20 +61,18 @@ def get_video_info(file_path, file_name=""):
     except:
         pass
 
-    # 2️⃣ CLEAN filename before detection
-    name = clean_name(file_name)
+    # 2️⃣ If quality not found → detect from filename
+    if quality == "Unknown" and file_name:
+        name = clean_name(file_name)
 
-    if quality == "Unknown":
         if "2160p" in name or "4k" in name:
-            quality = "2160p (4K)"
+            quality = "2160p"
         elif "1080p" in name:
             quality = "1080p"
         elif "720p" in name:
             quality = "720p"
         elif "480p" in name:
             quality = "480p"
-        elif "360p" in name:
-            quality = "360p"
 
     return quality, duration
 
