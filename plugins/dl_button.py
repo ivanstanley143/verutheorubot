@@ -132,7 +132,7 @@ async def ddl_call_back(bot, update):
         language = "Hindi"
     elif "english" in file_lower:
         language = "English"
-    elif "english" in file_lower:
+    elif "kannada" in file_lower:
         language = "Kannada"
     else:
         language = "Unknown"
