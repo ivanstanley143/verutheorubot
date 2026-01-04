@@ -24,7 +24,30 @@ from PIL import Image
 from pyrogram import enums 
 
 
+def get_video_info(file_path):
+    quality = "Unknown"
+    duration = "Unknown"
 
+    try:
+        parser = createParser(file_path)
+        if not parser:
+            return quality, duration
+
+        metadata = extractMetadata(parser)
+        if metadata:
+            if metadata.has("height"):
+                quality = f"{metadata.get('height')}p"
+
+            if metadata.has("duration"):
+                seconds = metadata.get("duration").seconds
+                h = seconds // 3600
+                m = (seconds % 3600) // 60
+                s = seconds % 60
+                duration = f"{h}h {m}m {s}s"
+    except:
+        pass
+
+    return quality, duration
 async def ddl_call_back(bot, update):
     logger.info(update)
     cb_data = update.data
@@ -63,8 +86,7 @@ async def ddl_call_back(bot, update):
             elif entity.type == "url":
                 o = entity.offset
                 l = entity.length
-                youtube_dl_url = youtube_dl_url[o:o + l]
-    description = Translation.CUSTOM_CAPTION_UL_FILE
+                youtube_dl_url = youtube_dl_url[o:o + l]    
     start = datetime.now()
     await update.message.edit_caption(
         caption=Translation.DOWNLOAD_START,
@@ -96,6 +118,35 @@ async def ddl_call_back(bot, update):
             )
             return False
     if os.path.exists(download_directory):
+        quality, duration = get_video_info(download_directory)
+
+    # Detect language from filename
+        file_lower = custom_file_name.lower()
+    if "malayalam" in file_lower or "ml" in file_lower:
+        language = "Malayalam"
+    elif "tamil" in file_lower or "tam" in file_lower:
+        language = "Tamil"
+    elif "telugu" in file_lower:
+        language = "Telugu"
+    elif "hindi" in file_lower:
+        language = "Hindi"
+    elif "hindi" in file_lower:
+        language = "English"
+    elif "hindi" in file_lower:
+        language = "Kannada"
+    else:
+        language = "Unknown"
+
+# Clean title
+title = os.path.splitext(custom_file_name)[0]
+title = title.replace("_", " ").replace(".", " ")
+description = f"""
+<b>{title}</b>
+
+🎬 <b>{quality}</b>
+⏱ <b>{duration}</b>
+🔊 <b>{language}</b>
+"""
         end_one = datetime.now()
         await update.message.edit_caption(
             caption=Translation.UPLOAD_START,
