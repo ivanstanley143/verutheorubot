@@ -1,4 +1,10 @@
-
+import urllib.parse
+def get_filename_from_url(url):
+    parsed = urllib.parse.urlparse(url)
+    name = os.path.basename(parsed.path)
+    name = urllib.parse.unquote(name)
+    return name if name else "file.bin"
+  
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,6 +20,8 @@ def DetectFileSize(url):
 
 
 def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_id):
+  if not file_name:
+        file_name = get_filename_from_url(url)
     if os.path.exists(file_name):
         os.remove(file_name)
     if not url:
