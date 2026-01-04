@@ -1,4 +1,4 @@
-from urllib.parse import unquote
+from urllib.parse import urlparse, unquote
 
 def clean_name(name: str) -> str:
     """
