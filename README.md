@@ -1,7 +1,7 @@
 ## URL Uᴘʟᴏᴀᴅᴇʀ ʙᴏᴛ V4 🚀
 
 
-[![logo](https://graph.org/file/3a2673598ff2bf4d8fe62-469872b46100c9edb8.jpg)](https://telegram.me/zkp143)
+[![logo](https://i.postimg.cc/5tsYLjXg/IMG-20260104-050719-255.jpg)](https://telegram.me/zkp143)
 
 ![Repo Size](https://img.shields.io/github/repo-size/LISA-KOREA/UPLOADER-BOT-V4?&style=flat-square&logo=github)
 
