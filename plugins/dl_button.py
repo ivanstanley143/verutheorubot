@@ -117,30 +117,35 @@ async def ddl_call_back(bot, update):
     quality, duration = get_video_info(download_path)
 
     file_lower = custom_file_name.lower()
-    if "malayalam" in file_lower or "mal" in file_lower:
-        language = "Malayalam"
-    elif "tamil" in file_lower or "tam" in file_lower:
-        language = "Tamil"
-    elif "telugu" in file_lower or "tel" in file_lower:
-        language = "Telugu"
-    elif "hindi" in file_lower or "hin" in file_lower:
-        language = "Hindi"
-    elif "english" in file_lower or "eng" in file_lower:
-        language = "English"
-    elif "kannada" in file_lower or "kan" in file_lower:
-        language = "Kannada"
-    else:
-        language = "Unknown"
+    languages = []
 
-    title = os.path.splitext(custom_file_name)[0].replace("_", " ").replace(".", " ")
+if "malayalam" in file_lower or "mal" in file_lower:
+    languages.append("Malayalam")
 
-    description = (
-        f"<b>{title}</b>\n\n"
-        f"🎬 <b>{quality}</b>\n"
-        f"⏱ <b>{duration}</b>\n"
-        f"🔊 <b>{language}</b>"
-    )
+if "tamil" in file_lower or "tam" in file_lower:
+    languages.append("Tamil")
 
+if "telugu" in file_lower or "tel" in file_lower:
+    languages.append("Telugu")
+
+if "hindi" in file_lower or "hin" in file_lower:
+    languages.append("Hindi")
+
+if "english" in file_lower or "eng" in file_lower:
+    languages.append("English")
+
+language = " + ".join(languages)   # ← NO Unknown
+
+    title = os.path.splitext(custom_file_name)[0]
+    title = unquote(title)
+    title = title.replace("+", " ").replace("_", " ").replace(".", " ")
+    title = " ".join(title.split())
+    description = f"<b>{title}</b>\n\n"
+    description += f"🎬 <b>{quality}</b>\n"
+    description += f"⏱ <b>{duration}</b>\n"
+
+if language:
+    description += f"🔊 <b>{language}</b>"
     await update.message.edit_caption(
         caption=Translation.UPLOAD_START,
         parse_mode=enums.ParseMode.HTML
