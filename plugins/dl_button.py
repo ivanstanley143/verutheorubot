@@ -130,23 +130,23 @@ async def ddl_call_back(bot, update):
         language = "Telugu"
     elif "hindi" in file_lower:
         language = "Hindi"
-    elif "hindi" in file_lower:
+    elif "english" in file_lower:
         language = "English"
-    elif "hindi" in file_lower:
+    elif "english" in file_lower:
         language = "Kannada"
     else:
         language = "Unknown"
 
 # Clean title
-title = os.path.splitext(custom_file_name)[0]
-title = title.replace("_", " ").replace(".", " ")
-description = f"""
-<b>{title}</b>
+    title = os.path.splitext(custom_file_name)[0]
+    title = title.replace("_", " ").replace(".", " ")
+    description = f"""
+    <b>{title}</b>
 
-🎬 <b>{quality}</b>
-⏱ <b>{duration}</b>
-🔊 <b>{language}</b>
-"""
+ 🎬 <b>{quality}</b>
+  ⏱ <b>{duration}</b>
+ 🔊 <b>{language}</b>
+  """
         end_one = datetime.now()
         await update.message.edit_caption(
             caption=Translation.UPLOAD_START,
