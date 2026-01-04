@@ -1,10 +1,7 @@
+import time
 import urllib.parse
-def get_filename_from_url(url):
-    parsed = urllib.parse.urlparse(url)
-    name = os.path.basename(parsed.path)
-    name = urllib.parse.unquote(name)
-    return name if name else "file.bin"
-  
+from plugins.functions.display_progress import humanbytes
+
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -18,26 +15,38 @@ def DetectFileSize(url):
     total_size = int(r.headers.get("content-length", 0))
     return total_size
 
-
+def get_filename_from_url(url):
+    parsed = urllib.parse.urlparse(url)
+    name = os.path.basename(parsed.path)
+    name = urllib.parse.unquote(name)
+    return name if name else "file.bin"
+    
 def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_id):
-  if not file_name:
+
+    # ✅ Auto-detect filename if not provided
+    if not file_name:
         file_name = get_filename_from_url(url)
+
+    # ✅ Remove old file if exists
     if os.path.exists(file_name):
         os.remove(file_name)
+
     if not url:
         return file_name
+
     r = requests.get(url, allow_redirects=True, stream=True)
-    # https://stackoverflow.com/a/47342052/4723940
     total_size = int(r.headers.get("content-length", 0))
     downloaded_size = 0
+
     with open(file_name, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk:
                 fd.write(chunk)
-                downloaded_size += chunk_size
-            if client is not None:
-                if ((total_size // downloaded_size) % 5) == 0:
-                    time.sleep(0.3)
+                downloaded_size += len(chunk)   # ✅ FIXED
+
+            # Progress update
+            if client is not None and total_size > 0:
+                if downloaded_size % (5 * 1024 * 1024) < chunk_size:
                     try:
                         client.edit_message_text(
                             chat_id,
@@ -50,4 +59,5 @@ def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_i
                         )
                     except:
                         pass
+
     return file_name
