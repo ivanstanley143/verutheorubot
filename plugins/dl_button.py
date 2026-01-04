@@ -227,21 +227,22 @@ async def ddl_call_back(bot, update):
     )
 
 
-# ---------------- DOWNLOAD ---------------- #
+# ---------------- DOWNLOAD (FIXED) ---------------- #
 
 async def download_coroutine(bot, session, url, file_name, chat_id, message_id, start):
     downloaded = 0
-    last_update = 0
+    last_update_time = start
+    last_downloaded = 0
 
     async with session.get(url, timeout=Config.PROCESS_MAX_TIMEOUT) as response:
-        total = int(response.headers.get("Content-Length", 0))
+        total_length = int(response.headers.get("Content-Length", 0))
 
         await bot.edit_message_text(
             chat_id,
             message_id,
-            f"⬇️ <b>Starting download</b>\n\n"
-            f"📦 Size: {humanbytes(total)}",
-            parse_mode="html"
+            f"Initiating Download\n"
+            f"File Size: {humanbytes(total_length)}",
+            parse_mode=None   # ✅ IMPORTANT
         )
 
         with open(file_name, "wb") as f:
@@ -255,22 +256,27 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
 
                 now = time.time()
 
-                # ✅ UPDATE ONLY EVERY 3 SECONDS
-                if now - last_update >= 3:
-                    speed = downloaded / (now - start)
-                    eta = (total - downloaded) / speed if speed > 0 else 0
+                # Update every 2 seconds (FAST + SAFE)
+                if now - last_update_time >= 2:
+                    speed = (downloaded - last_downloaded) / (now - last_update_time)
+                    eta = (total_length - downloaded) / speed if speed > 0 else 0
+
+                    progress_text = (
+                        f"Downloading...\n\n"
+                        f"Downloaded: {humanbytes(downloaded)} / {humanbytes(total_length)}\n"
+                        f"Speed: {humanbytes(speed)}/s\n"
+                        f"ETA: {TimeFormatter(int(eta * 1000))}"
+                    )
 
                     try:
                         await bot.edit_message_text(
                             chat_id,
                             message_id,
-                            f"⬇️ <b>Downloading…</b>\n\n"
-                            f"📥 {humanbytes(downloaded)} / {humanbytes(total)}\n"
-                            f"🚀 Speed: {humanbytes(speed)}/s\n"
-                            f"⏳ ETA: {TimeFormatter(int(eta * 1000))}",
-                            parse_mode="html"
+                            progress_text,
+                            parse_mode=None   # ✅ NEVER HTML HERE
                         )
                     except:
                         pass
 
-                    last_update = now
+                    last_update_time = now
+                    last_downloaded = downloaded
