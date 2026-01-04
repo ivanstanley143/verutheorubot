@@ -119,35 +119,32 @@ async def ddl_call_back(bot, update):
     file_lower = custom_file_name.lower()
     languages = []
 
-if "malayalam" in file_lower or "mal" in file_lower:
-    languages.append("Malayalam")
+    if "malayalam" in file_lower or "mal" in file_lower:
+        languages.append("Malayalam")
+    if "tamil" in file_lower or "tam" in file_lower:
+        languages.append("Tamil")
+    if "telugu" in file_lower or "tel" in file_lower:
+        languages.append("Telugu")
+    if "hindi" in file_lower or "hin" in file_lower:
+        languages.append("Hindi")
+    if "english" in file_lower or "eng" in file_lower:
+        languages.append("English")
 
-if "tamil" in file_lower or "tam" in file_lower:
-    languages.append("Tamil")
-
-if "telugu" in file_lower or "tel" in file_lower:
-    languages.append("Telugu")
-
-if "hindi" in file_lower or "hin" in file_lower:
-    languages.append("Hindi")
-
-if "english" in file_lower or "eng" in file_lower:
-    languages.append("English")
-
-language = " + ".join(languages)   # ← NO Unknown
+    language = " + ".join(languages)   # no "Unknown"
 
     title = os.path.splitext(custom_file_name)[0]
     title = unquote(title)
     title = title.replace("+", " ").replace("_", " ").replace(".", " ")
     title = " ".join(title.split())
+
     description = f"<b>{title}</b>\n\n"
     description += f"🎬 <b>{quality}</b>\n"
     description += f"⏱ <b>{duration}</b>\n"
 
-if language:
-    description += f"🔊 <b>{language}</b>"
-    
-await update.message.edit_caption(
+    if language:
+        description += f"🔊 <b>{language}</b>"
+
+    await update.message.edit_caption(
         caption=Translation.UPLOAD_START,
         parse_mode=enums.ParseMode.HTML
     )
@@ -213,7 +210,6 @@ await update.message.edit_caption(
 
 async def download_coroutine(bot, session, url, file_name, chat_id, message_id, start):
     downloaded = 0
-    display_message = ""
 
     async with session.get(url, timeout=Config.PROCESS_MAX_TIMEOUT) as response:
         total_length = int(response.headers.get("Content-Length", 0))
@@ -229,11 +225,11 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
                 chunk = await response.content.read(Config.CHUNK_SIZE)
                 if not chunk:
                     break
+
                 f.write(chunk)
                 downloaded += len(chunk)
 
-                diff = time.time() - start
-                if diff > 0 and downloaded % (5 * 1024 * 1024) == 0:
+                if downloaded % (5 * 1024 * 1024) == 0:
                     await bot.edit_message_text(
                         chat_id,
                         message_id,
