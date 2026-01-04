@@ -34,6 +34,7 @@ from pyrogram.types import Thumbnail
 
 @Client.on_message(filters.private & filters.regex(pattern=".*http.*"))
 async def echo(bot, update): 
+
     if Config.LOG_CHANNEL:
         try:
             log_message = await update.forward(Config.LOG_CHANNEL)
@@ -49,52 +50,57 @@ async def echo(bot, update):
             )
         except Exception as error:
             print(error)
+
     if not update.from_user:
         return await update.reply_text("I don't know about you sar :(")
+
     await AddUser(bot, update)
+
     if Config.UPDATES_CHANNEL:
         fsub = await handle_force_subscribe(bot, update)
         if fsub == 400:
             return
 
-
     logger.info(update.from_user)
     url = update.text
-  # ---------- DIRECT FILE CHECK ----------
-parsed = urlparse(url)
-path = parsed.path.lower()
 
-DIRECT_EXTENSIONS = (
-    ".mkv", ".mp4", ".avi", ".mov", ".webm",
-    ".mp3", ".flac", ".wav",
-    ".zip", ".rar", ".7z",
-    ".srt", ".ass"
-)
+    # ---------- DIRECT FILE CHECK (FIXED INDENTATION) ----------
+    parsed = urlparse(url)
+    path = parsed.path.lower()
 
-if path.endswith(DIRECT_EXTENSIONS):
-    cb_string_video = "video=direct=none"
-    cb_string_file = "file=direct=none"
-
-    keyboard = InlineKeyboardMarkup(
-        [[
-            InlineKeyboardButton("🎥 Video", callback_data=cb_string_video),
-            InlineKeyboardButton("📁 Document", callback_data=cb_string_file)
-        ]]
+    DIRECT_EXTENSIONS = (
+        ".mkv", ".mp4", ".avi", ".mov", ".webm",
+        ".mp3", ".flac", ".wav",
+        ".zip", ".rar", ".7z",
+        ".srt", ".ass"
     )
 
-    await update.reply_text(
-        Translation.FORMAT_SELECTION,
-        reply_markup=keyboard,
-        disable_web_page_preview=True,
-        quote=True
-    )
-    return
-# ---------- END DIRECT FILE CHECK ----------
+    if path.endswith(DIRECT_EXTENSIONS):
+        cb_string_video = "video=direct=none"
+        cb_string_file = "file=direct=none"
+
+        keyboard = InlineKeyboardMarkup(
+            [[
+                InlineKeyboardButton("🎥 Video", callback_data=cb_string_video),
+                InlineKeyboardButton("📁 Document", callback_data=cb_string_file)
+            ]]
+        )
+
+        await update.reply_text(
+            Translation.FORMAT_SELECTION,
+            reply_markup=keyboard,
+            disable_web_page_preview=True,
+            quote=True
+        )
+        return
+    # ---------- END DIRECT FILE CHECK ----------
+
     youtube_dl_username = None
     youtube_dl_password = None
     file_name = None
 
     print(url)
+
     if "|" in url:
         url_parts = url.split("|")
         if len(url_parts) == 2:
@@ -113,17 +119,19 @@ if path.endswith(DIRECT_EXTENSIONS):
                     o = entity.offset
                     l = entity.length
                     url = url[o:o + l]
+
         if url is not None:
             url = url.strip()
         if file_name is not None:
             file_name = file_name.strip()
-        # https://stackoverflow.com/a/761825/4723940
         if youtube_dl_username is not None:
             youtube_dl_username = youtube_dl_username.strip()
         if youtube_dl_password is not None:
             youtube_dl_password = youtube_dl_password.strip()
+
         logger.info(url)
         logger.info(file_name)
+
     else:
         for entity in update.entities:
             if entity.type == "text_link":
@@ -132,6 +140,7 @@ if path.endswith(DIRECT_EXTENSIONS):
                 o = entity.offset
                 l = entity.length
                 url = url[o:o + l]
+
     if Config.HTTP_PROXY != "":
         command_to_exec = [
             "yt-dlp",
@@ -150,67 +159,49 @@ if path.endswith(DIRECT_EXTENSIONS):
             url,
             "--geo-bypass-country",
             "IN"
-
         ]
+
     if youtube_dl_username is not None:
-        command_to_exec.append("--username")
-        command_to_exec.append(youtube_dl_username)
+        command_to_exec.extend(["--username", youtube_dl_username])
     if youtube_dl_password is not None:
-        command_to_exec.append("--password")
-        command_to_exec.append(youtube_dl_password)
+        command_to_exec.extend(["--password", youtube_dl_password])
+
     logger.info(command_to_exec)
+
     chk = await bot.send_message(
-            chat_id=update.chat.id,
-            text=f'Pʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ʟɪɴᴋ ⌛',
-            disable_web_page_preview=True,
-            reply_to_message_id=update.id,
-            parse_mode=enums.ParseMode.HTML
-          )
+        chat_id=update.chat.id,
+        text="Pʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ʟɪɴᴋ ⌛",
+        disable_web_page_preview=True,
+        reply_to_message_id=update.id,
+        parse_mode=enums.ParseMode.HTML
+    )
+
     process = await asyncio.create_subprocess_exec(
         *command_to_exec,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
-    # Wait for the subprocess to finish
+
     stdout, stderr = await process.communicate()
     e_response = stderr.decode().strip()
-    logger.info(e_response)
-    t_response = stdout.decode().strip()
+
     if e_response and "nonnumeric port" not in e_response:
-        # logger.warn("Status : FAIL", exc.returncode, exc.output)
-        error_message = e_response.replace("please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; see  https://yt-dl.org/update  on how to update. Be sure to call youtube-dl with the --verbose flag and include its complete output.", "")
-        if "This video is only available for registered users." in error_message:
-            error_message += Translation.SET_CUSTOM_USERNAME_PASSWORD
         await chk.delete()
-        
-        time.sleep(10)
         await bot.send_message(
             chat_id=update.chat.id,
-            text=Translation.NO_VOID_FORMAT_FOUND.format(str(error_message)),
-            reply_to_message_id=update.id,
-            disable_web_page_preview=True
-        )
-        return False
-    
-    else:
-        #fallback for nonnumeric port a.k.a seedbox.io
-        inline_keyboard = []
-        cb_string_file = "{}={}={}".format(
-            "file", "LFO", "NONE")
-        cb_string_video = "{}={}={}".format(
-            "video", "OFL", "ENON")
-        inline_keyboard.append([
-            InlineKeyboardButton(
-                "📁 ᴍᴇᴅɪᴀ",
-                callback_data=(cb_string_video).encode("UTF-8")
-            )
-        ])
-        reply_markup = InlineKeyboardMarkup(inline_keyboard)
-        await chk.delete(True)
-        await bot.send_message(
-            chat_id=update.chat.id,
-            text=Translation.FORMAT_SELECTION,
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
+            text=Translation.NO_VOID_FORMAT_FOUND.format(e_response),
             reply_to_message_id=update.id
         )
+        return
+
+    inline_keyboard = [[
+        InlineKeyboardButton("📁 ᴍᴇᴅɪᴀ", callback_data="video=OFL=ENON")
+    ]]
+
+    await chk.delete()
+    await bot.send_message(
+        chat_id=update.chat.id,
+        text=Translation.FORMAT_SELECTION,
+        reply_markup=InlineKeyboardMarkup(inline_keyboard),
+        reply_to_message_id=update.id
+    )
