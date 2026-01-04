@@ -231,6 +231,7 @@ async def ddl_call_back(bot, update):
 
 async def download_coroutine(bot, session, url, file_name, chat_id, message_id, start):
     downloaded = 0
+    last_update = 0
 
     async with session.get(url, timeout=Config.PROCESS_MAX_TIMEOUT) as response:
         total_length = int(response.headers.get("Content-Length", 0))
@@ -238,7 +239,12 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
         await bot.edit_message_text(
             chat_id,
             message_id,
-            f"Initiating Download\nURL: {url}\nFile Size: {humanbytes(total_length)}"
+            text=(
+                "<b>📥 Initiating Download</b>\n\n"
+                f"🔗 <b>URL:</b> {url}\n"
+                f"📦 <b>File Size:</b> {humanbytes(total_length) if total_length else 'Unknown'}"
+            ),
+            parse_mode="HTML"
         )
 
         with open(file_name, "wb") as f:
@@ -250,9 +256,35 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
                 f.write(chunk)
                 downloaded += len(chunk)
 
-                if downloaded % (5 * 1024 * 1024) == 0:
-                    await bot.edit_message_text(
-                        chat_id,
-                        message_id,
-                        f"Downloaded: {humanbytes(downloaded)} / {humanbytes(total_length)}"
-                    )
+                now = time.time()
+
+                # 🔹 Update every 3 seconds (SAFE)
+                if now - last_update >= 3:
+                    last_update = now
+
+                    if total_length > 0:
+                        percent = (downloaded / total_length) * 100
+                        speed = downloaded / (now - start) if now > start else 0
+
+                        text = (
+                            "<b>📥 Downloading…</b>\n\n"
+                            f"📦 <b>{humanbytes(downloaded)}</b> / <b>{humanbytes(total_length)}</b>\n"
+                            f"📊 <b>{percent:.2f}%</b>\n"
+                            f"🚀 <b>{humanbytes(speed)}/s</b>"
+                        )
+                    else:
+                        text = (
+                            "<b>📥 Downloading…</b>\n\n"
+                            f"📦 <b>{humanbytes(downloaded)}</b>\n"
+                            "📊 <b>Progress:</b> Unknown"
+                        )
+
+                    try:
+                        await bot.edit_message_text(
+                            chat_id,
+                            message_id,
+                            text=text,
+                            parse_mode="HTML"
+                        )
+                    except:
+                        pass
