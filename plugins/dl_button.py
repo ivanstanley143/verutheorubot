@@ -244,7 +244,7 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
                 f"🔗 <b>URL:</b> {url}\n"
                 f"📦 <b>File Size:</b> {humanbytes(total_length) if total_length else 'Unknown'}"
             ),
-            parse_mode="HTML"
+            parse_mode=enums.ParseMode.HTML
         )
 
         with open(file_name, "wb") as f:
@@ -255,10 +255,9 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
 
                 f.write(chunk)
                 downloaded += len(chunk)
-
                 now = time.time()
 
-                # 🔹 Update every 3 seconds (SAFE)
+                # update every 3 seconds
                 if now - last_update >= 3:
                     last_update = now
 
@@ -284,7 +283,7 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
                             chat_id,
                             message_id,
                             text=text,
-                            parse_mode="HTML"
+                            parse_mode=enums.ParseMode.HTML
                         )
                     except:
                         pass
