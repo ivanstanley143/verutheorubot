@@ -123,7 +123,7 @@ async def ddl_call_back(bot, update):
     # Detect language from filename
     file_lower = custom_file_name.lower()
 
-    if "malayalam" in file_lower or "ml" in file_lower:
+    if "malayalam" in file_lower or "mal" in file_lower:
         language = "Malayalam"
     elif "tamil" in file_lower or "tam" in file_lower:
         language = "Tamil"
@@ -142,13 +142,12 @@ async def ddl_call_back(bot, update):
     title = os.path.splitext(custom_file_name)[0]
     title = title.replace("_", " ").replace(".", " ")
 
-    description = f"""
-<b>{title}</b>
-
-🎬 <b>{quality}</b>
-⏱ <b>{duration}</b>
-🔊 <b>{language}</b>
-"""
+    description = (
+    f"<b>{title}</b>\n\n"
+    f"🎬 <b>{quality}</b>\n"
+    f"⏱ <b>{duration}</b>\n"
+    f"🔊 <b>{language}</b>"
+)
         end_one = datetime.now()
         await update.message.edit_caption(
             caption=Translation.UPLOAD_START,
