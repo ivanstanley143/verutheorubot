@@ -34,8 +34,8 @@ async def ddl_call_back(bot, update):
         "/" + str(update.from_user.id) + ".jpg"
     youtube_dl_url = update.message.reply_to_message.text
     parsed_url = urlparse(youtube_dl_url)
-custom_file_name = os.path.basename(parsed_url.path)
-custom_file_name = unquote(custom_file_name)
+    custom_file_name = os.path.basename(parsed_url.path)
+    custom_file_name = unquote(custom_file_name)
     if "|" in youtube_dl_url:
         url_parts = youtube_dl_url.split("|")
         if len(url_parts) == 2:
