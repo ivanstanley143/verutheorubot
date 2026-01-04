@@ -2,7 +2,7 @@
 
 
 [![logo](https://i.postimg.cc/5tsYLjXg/IMG-20260104-050719-255.jpg)](https://telegram.me/zkp143)
-
+https://github.com/user-attachments/assets/31b78b28-419a-474f-9b12-a97756c85007
 ![Repo Size](https://img.shields.io/github/repo-size/LISA-KOREA/UPLOADER-BOT-V4?&style=flat-square&logo=github)
 
 #
