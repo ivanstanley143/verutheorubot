@@ -66,7 +66,7 @@ async def ddl_call_back(bot, update):
     youtube_dl_url = update.message.reply_to_message.text
     parsed_url = urlparse(youtube_dl_url)
 
-    custom_file_name = unquote(os.path.basename(parsed_url.path))
+    custom_file_name = unquote(os.path.basename(parsed_url.path)).replace("+", " ")
 
     if "|" in youtube_dl_url:
         url_parts = youtube_dl_url.split("|")
