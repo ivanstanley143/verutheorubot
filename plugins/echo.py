@@ -1,6 +1,6 @@
-# ©️ LISA-KOREA | @LISA_FAN_LK | NT_BOT_CHANNEL | TG-SORRY
 
 
+from urllib.parse import urlparse
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -60,6 +60,36 @@ async def echo(bot, update):
 
     logger.info(update.from_user)
     url = update.text
+  # ---------- DIRECT FILE CHECK ----------
+parsed = urlparse(url)
+path = parsed.path.lower()
+
+DIRECT_EXTENSIONS = (
+    ".mkv", ".mp4", ".avi", ".mov", ".webm",
+    ".mp3", ".flac", ".wav",
+    ".zip", ".rar", ".7z",
+    ".srt", ".ass"
+)
+
+if path.endswith(DIRECT_EXTENSIONS):
+    cb_string_video = "video=direct=none"
+    cb_string_file = "file=direct=none"
+
+    keyboard = InlineKeyboardMarkup(
+        [[
+            InlineKeyboardButton("🎥 Video", callback_data=cb_string_video),
+            InlineKeyboardButton("📁 Document", callback_data=cb_string_file)
+        ]]
+    )
+
+    await update.reply_text(
+        Translation.FORMAT_SELECTION,
+        reply_markup=keyboard,
+        disable_web_page_preview=True,
+        quote=True
+    )
+    return
+# ---------- END DIRECT FILE CHECK ----------
     youtube_dl_username = None
     youtube_dl_password = None
     file_name = None
