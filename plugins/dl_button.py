@@ -30,28 +30,42 @@ from pyrogram import enums
 
 # ---------------- VIDEO INFO ---------------- #
 
-def get_video_info(file_path):
+def get_video_info(file_path, file_name=""):
     quality = "Unknown"
     duration = "Unknown"
 
+    # 1️⃣ Try metadata (optional)
     try:
         parser = createParser(file_path)
-        if not parser:
-            return quality, duration
+        if parser:
+            metadata = extractMetadata(parser)
+            if metadata:
+                if metadata.has("height"):
+                    quality = f"{metadata.get('height')}p"
 
-        metadata = extractMetadata(parser)
-        if metadata:
-            if metadata.has("height"):
-                quality = f"{metadata.get('height')}p"
-
-            if metadata.has("duration"):
-                seconds = metadata.get("duration").seconds
-                h = seconds // 3600
-                m = (seconds % 3600) // 60
-                s = seconds % 60
-                duration = f"{h}h {m}m {s}s"
+                if metadata.has("duration"):
+                    seconds = metadata.get("duration").seconds
+                    h = seconds // 3600
+                    m = (seconds % 3600) // 60
+                    s = seconds % 60
+                    duration = f"{h}h {m}m {s}s"
     except:
         pass
+
+    # 2️⃣ CLEAN filename before detection
+    name = clean_name(file_name)
+
+    if quality == "Unknown":
+        if "2160p" in name or "4k" in name:
+            quality = "2160p (4K)"
+        elif "1080p" in name:
+            quality = "1080p"
+        elif "720p" in name:
+            quality = "720p"
+        elif "480p" in name:
+            quality = "480p"
+        elif "360p" in name:
+            quality = "360p"
 
     return quality, duration
 
@@ -114,7 +128,7 @@ async def ddl_call_back(bot, update):
 
     # -------- METADATA -------- #
 
-    quality, duration = get_video_info(download_path)
+    quality, duration = get_video_info(download_path, custom_file_name)
 
     file_lower = custom_file_name.lower()
     languages = []
